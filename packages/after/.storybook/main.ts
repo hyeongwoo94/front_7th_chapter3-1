@@ -1,6 +1,8 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import path from 'path';
+import tailwindcss from '@tailwindcss/postcss';
+import autoprefixer from 'autoprefixer';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -21,6 +23,14 @@ const config: StorybookConfig = {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '../src'),
+        },
+      },
+      css: {
+        postcss: {
+          plugins: [
+            tailwindcss,
+            autoprefixer,
+          ],
         },
       },
     });
