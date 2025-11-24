@@ -2,10 +2,10 @@
 export default {
   darkMode: ["class"],
   content: [
-    "./packages/after/index.html",
-    "./packages/after/src/**/*.{js,ts,jsx,tsx}",
-    "./packages/after/.storybook/**/*.{js,ts,jsx,tsx}",
-    "./packages/after/src/**/*.stories.{js,ts,jsx,tsx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./.storybook/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.stories.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
