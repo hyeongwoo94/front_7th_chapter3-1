@@ -1,0 +1,241 @@
+/**
+ * Design Tokens
+ * 
+ * 이 파일은 before 폴더의 스타일을 분석하여 추출한 디자인 토큰을 정의합니다.
+ * Tailwind CSS 4.x의 @theme 블록을 사용하여 디자인 시스템을 구축합니다.
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* ============================================
+     컬러 토큰 (Colors)
+     ============================================ */
+  
+  /* Primary 컬러 - 메인 액션 컬러 */
+  --color-primary: #1976d2;
+  --color-primary-hover: #1565c0;
+  --color-primary-border: #1565c0;
+  
+  /* Secondary 컬러 - 보조 액션 컬러 */
+  --color-secondary: #f5f5f5;
+  --color-secondary-hover: #e0e0e0;
+  --color-secondary-text: #333;
+  --color-secondary-border: #ddd;
+  
+  /* Danger 컬러 - 위험/삭제 액션 */
+  --color-danger: #d32f2f;
+  --color-danger-hover: #c62828;
+  --color-danger-border: #c62828;
+  
+  /* Success 컬러 - 성공/완료 액션 */
+  --color-success: #388e3c;
+  --color-success-hover: #2e7d32;
+  --color-success-border: #2e7d32;
+  
+  /* Warning 컬러 - 경고 */
+  --color-warning: #f57c00;
+  --color-warning-bg: #fff3e0;
+  --color-warning-border: #ffb74d;
+  --color-warning-text: #e65100;
+  
+  /* Info 컬러 - 정보 */
+  --color-info: #0288d1;
+  --color-info-bg: #e3f2fd;
+  --color-info-border: #90caf9;
+  --color-info-text: #0d47a1;
+  
+  /* 텍스트 컬러 */
+  --color-text-primary: #000;
+  --color-text-secondary: #333;
+  --color-text-tertiary: #666;
+  --color-text-disabled: rgba(0, 0, 0, 0.6);
+  --color-text-muted: rgba(0, 0, 0, 0.87);
+  --color-text-subtitle: rgba(0, 0, 0, 0.6);
+  
+  /* 배경 컬러 */
+  --color-bg-primary: #fff;
+  --color-bg-secondary: #f5f5f5;
+  --color-bg-tertiary: #fafafa;
+  --color-bg-disabled: rgba(0, 0, 0, 0.12);
+  
+  /* 보더 컬러 */
+  --color-border-primary: #ccc;
+  --color-border-secondary: #ddd;
+  --color-border-tertiary: rgba(0, 0, 0, 0.12);
+  --color-border-quaternary: rgba(0, 0, 0, 0.08);
+  --color-border-input: rgba(0, 0, 0, 0.23);
+  --color-border-checkbox: #d1d5db;
+  
+  /* Alert 배경 컬러 */
+  --color-alert-success-bg: #e8f5e9;
+  --color-alert-success-border: #81c784;
+  --color-alert-success-text: #1b5e20;
+  --color-alert-error-bg: #ffebee;
+  --color-alert-error-border: #e57373;
+  --color-alert-error-text: #b71c1c;
+  --color-alert-default-bg: #f5f5f5;
+  --color-alert-default-border: #bdbdbd;
+  --color-alert-default-text: #424242;
+  
+  /* Badge 컬러 */
+  --color-badge-primary: #1976d2;
+  --color-badge-secondary: #757575;
+  --color-badge-success: #388e3c;
+  --color-badge-danger: #d32f2f;
+  --color-badge-warning: #f57c00;
+  --color-badge-info: #0288d1;
+  
+  /* ============================================
+     타이포그래피 토큰 (Typography)
+     ============================================ */
+  
+  /* Font Families */
+  --font-family-primary: Arial, sans-serif;
+  --font-family-secondary: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  
+  /* Font Sizes */
+  --font-size-xs: 0.625rem;      /* 10px - Badge small */
+  --font-size-sm: 0.75rem;       /* 12px - Helper text, Badge medium */
+  --font-size-base: 0.8125rem;   /* 13px - Badge large, Label */
+  --font-size-md: 0.875rem;      /* 14px - Input, Button md, Table */
+  --font-size-lg: 0.9375rem;     /* 15px - Button lg, Alert title */
+  --font-size-xl: 1rem;          /* 16px - Textarea */
+  --font-size-2xl: 1.125rem;     /* 18px - Card title */
+  --font-size-3xl: 1.25rem;       /* 20px - Modal title */
+  
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  
+  /* Line Heights */
+  --line-height-tight: 1;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.5;
+  --line-height-loose: 1.6;
+  --line-height-text: 1.43;
+  --line-height-textarea: 1.1876em;
+  
+  /* ============================================
+     간격 토큰 (Spacing)
+     ============================================ */
+  
+  /* Padding */
+  --spacing-xs: 4px;
+  --spacing-sm: 6px;
+  --spacing-md: 8px;
+  --spacing-lg: 10px;
+  --spacing-xl: 12px;
+  --spacing-2xl: 16px;
+  --spacing-3xl: 20px;
+  --spacing-4xl: 24px;
+  
+  /* Button Padding */
+  --button-padding-sm: 6px 12px;
+  --button-padding-md: 10px 20px;
+  --button-padding-lg: 12px 24px;
+  
+  /* Input Padding */
+  --input-padding: 8px 10px;
+  --textarea-padding: 16.5px 14px;
+  --textarea-padding-focus: 15.5px 13px;
+  
+  /* Card Padding */
+  --card-padding: 20px;
+  --card-header-padding: 20px;
+  --card-body-padding: 20px;
+  
+  /* Modal Padding */
+  --modal-padding: 16px 24px;
+  --modal-body-padding: 24px;
+  
+  /* Margin */
+  --margin-xs: 4px;
+  --margin-sm: 6px;
+  --margin-md: 8px;
+  --margin-lg: 12px;
+  --margin-xl: 16px;
+  --margin-2xl: 20px;
+  
+  /* ============================================
+     Border Radius 토큰
+     ============================================ */
+  
+  --radius-xs: 2px;      /* Checkbox */
+  --radius-sm: 3px;      /* Button, Input, Badge, Alert */
+  --radius-md: 4px;      /* Card, Textarea, Modal */
+  --radius-lg: 8px;      /* Logo */
+  --radius-xl: 10px;     /* Badge pill */
+  --radius-full: 50%;   /* Modal close button */
+  
+  /* ============================================
+     그림자 토큰 (Shadows)
+     ============================================ */
+  
+  /* Card Shadows */
+  --shadow-card-default: 0px 2px 1px -1px rgba(0,0,0,0.2),
+                         0px 1px 1px 0px rgba(0,0,0,0.14),
+                         0px 1px 3px 0px rgba(0,0,0,0.12);
+  
+  --shadow-card-elevated: 0px 2px 4px -1px rgba(0,0,0,0.12),
+                          0px 1px 2px 0px rgba(0,0,0,0.08),
+                          0px 1px 4px 0px rgba(0,0,0,0.08);
+  
+  /* Modal Shadow */
+  --shadow-modal: 0px 11px 15px -7px rgba(0,0,0,0.2),
+                  0px 24px 38px 3px rgba(0,0,0,0.14),
+                  0px 9px 46px 8px rgba(0,0,0,0.12);
+  
+  /* Header Shadow */
+  --shadow-header: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  
+  /* ============================================
+     기타 토큰
+     ============================================ */
+  
+  /* Opacity */
+  --opacity-disabled: 0.6;
+  --opacity-hover: 0.04;
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.0, 0, 0.2, 1);
+  --transition-checkbox: 0.15s ease-in-out;
+  
+  /* Z-index */
+  --z-index-modal: 1000;
+  --z-index-header: 1000;
+  
+  /* Input Widths */
+  --input-width-small: 200px;
+  --input-width-medium: 300px;
+  --input-width-large: 400px;
+  --input-width-full: 100%;
+  
+  /* Badge Sizes */
+  --badge-height-small: 16px;
+  --badge-height-medium: 20px;
+  --badge-height-large: 24px;
+  --badge-padding-small: 0px 4px;
+  --badge-padding-medium: 0px 8px;
+  --badge-padding-large: 0px 10px;
+  
+  /* Checkbox Size */
+  --checkbox-size: 16px;
+  --checkbox-border-width: 2px;
+  
+  /* Modal Sizes */
+  --modal-width-small: 400px;
+  --modal-width-medium: 600px;
+  --modal-width-large: 900px;
+  --modal-max-height: 90vh;
+  
+  /* Header */
+  --header-height: 64px;
+  --header-max-width: 1400px;
+  --header-padding: 0 24px;
+  --logo-size: 40px;
+  --logo-gap: 12px;
+}
+
