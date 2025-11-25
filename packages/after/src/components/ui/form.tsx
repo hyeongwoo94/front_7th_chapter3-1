@@ -3,12 +3,17 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import {
   Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
   FormProvider,
   useFormContext,
+  type FieldPath,
+  type FieldValues,
 } from "react-hook-form";
+
+// ControllerProps는 react-hook-form에서 직접 export되지 않으므로 타입을 직접 추출
+type ControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = Parameters<typeof Controller<TFieldValues, TName>>[0];
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
