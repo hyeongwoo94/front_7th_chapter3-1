@@ -1,18 +1,16 @@
 import React from 'react';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+  NativeSelect,
+  NativeSelectOption,
+} from '../ui/native-select';
 import { Label } from '../ui/label';
 import { cn } from '@/lib/utils';
 
 /**
  * FormSelect 컴포넌트
  * 
- * shadcn/ui Select를 사용한 폼 셀렉트 컴포넌트입니다.
+ * shadcn/ui Native Select를 사용한 폼 셀렉트 컴포넌트입니다.
+ * 테스트 호환성을 위해 실제 HTML select 요소를 사용합니다.
  */
 interface Option {
   value: string;
@@ -61,31 +59,31 @@ export const FormSelect: React.FC<FormSelectProps> = ({
         </Label>
       )}
 
-      <Select
+      <NativeSelect
+        id={name}
+        name={name}
         value={value}
-        onValueChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
+        required={required}
+        className={cn(
+          error && 'border-[var(--color-danger)]',
+          'w-full'
+        )}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={ariaDescribedBy}
       >
-        <SelectTrigger
-          id={name}
-          name={name}
-          className={cn(
-            error && 'border-[var(--color-danger)]',
-            'w-full'
-          )}
-          aria-invalid={error ? 'true' : undefined}
-          aria-describedby={ariaDescribedBy}
-      >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
+        {placeholder && (
+          <NativeSelectOption value="" disabled>
+            {placeholder}
+          </NativeSelectOption>
+        )}
         {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+          <NativeSelectOption key={option.value} value={option.value}>
             {option.label}
-            </SelectItem>
+          </NativeSelectOption>
         ))}
-        </SelectContent>
-      </Select>
+      </NativeSelect>
 
       {error && (
         <p
