@@ -8,7 +8,6 @@ export const App: React.FC = () => {
     <div style={{ minHeight: "100vh", backgroundColor: "#f7fafc" }}>
       <Header />
       <main>
-        <div>배포</div>
         <ManagementPage />
       </main>
     </div>
