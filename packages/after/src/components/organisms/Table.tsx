@@ -8,9 +8,15 @@ import {
   TableRow,
 } from '../ui/table';
 import { Input } from '../ui/input';
-import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
+import {
+  getBadgeVariantFromStatus,
+  getBadgeLabelFromStatus,
+  getBadgeVariantFromUserRole,
+  getBadgeLabelFromUserRole,
+} from '@/lib/badge-mappers';
 
 interface Column {
   key: string;
@@ -118,13 +124,18 @@ export const Table: React.FC<TableProps> = ({
 
     if (entityType === 'user') {
       if (columnKey === 'role') {
-        return <Badge userRole={value} />;
+        const variant = getBadgeVariantFromUserRole(value);
+        const label = getBadgeLabelFromUserRole(value);
+        return <Badge variant={variant}>{label}</Badge>;
       }
       if (columnKey === 'status') {
+        // user status를 badge status로 매핑
         const badgeStatus =
           value === 'active' ? 'published' :
           value === 'inactive' ? 'draft' : 'rejected';
-        return <Badge status={badgeStatus} />;
+        const variant = getBadgeVariantFromStatus(badgeStatus);
+        const label = getBadgeLabelFromStatus(badgeStatus);
+        return <Badge variant={variant}>{label}</Badge>;
       }
       if (columnKey === 'lastLogin') {
         return value || '-';
@@ -145,15 +156,17 @@ export const Table: React.FC<TableProps> = ({
 
     if (entityType === 'post') {
       if (columnKey === 'category') {
-        const type =
+        const variant =
           value === 'development' ? 'primary' :
           value === 'design' ? 'info' :
           value === 'accessibility' ? 'danger' :
           'secondary';
-        return <Badge type={type} pill>{value}</Badge>;
+        return <Badge variant={variant} pill>{value}</Badge>;
       }
       if (columnKey === 'status') {
-        return <Badge status={value} />;
+        const variant = getBadgeVariantFromStatus(value);
+        const label = getBadgeLabelFromStatus(value);
+        return <Badge variant={variant}>{label}</Badge>;
       }
       if (columnKey === 'views') {
         return value?.toLocaleString() || '0';

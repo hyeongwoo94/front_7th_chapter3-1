@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "../components/atoms";
+import { Button } from "../components/ui/button";
 import { Alert, Table, Modal, Card } from "../components/organisms";
 import { FormInput, FormSelect, FormTextarea } from "../components/molecules";
 import { userService } from "../services/userService";
@@ -307,14 +307,14 @@ export const ManagementPage: React.FC = () => {
             <div className="flex gap-2">
               <Button
                 variant={entityType === "post" ? "primary" : "secondary"}
-                size="md"
+                size="default"
                 onClick={() => setEntityType("post")}
               >
                 게시글
               </Button>
               <Button
                 variant={entityType === "user" ? "primary" : "secondary"}
-                size="md"
+                size="default"
                 onClick={() => setEntityType("user")}
               >
                 사용자
@@ -326,7 +326,7 @@ export const ManagementPage: React.FC = () => {
             <div className="mb-4 text-right">
               <Button
                 variant="primary"
-                size="md"
+                size="default"
                 onClick={() => setIsCreateModalOpen(true)}
               >
                 새로 만들기
@@ -434,7 +434,7 @@ export const ManagementPage: React.FC = () => {
           <>
             <Button
               variant="secondary"
-              size="md"
+              size="default"
               onClick={() => {
                 setIsCreateModalOpen(false);
                 setUserFormData({});
@@ -443,7 +443,7 @@ export const ManagementPage: React.FC = () => {
             >
               취소
             </Button>
-            <Button variant="primary" size="md" onClick={handleCreate}>
+            <Button variant="primary" size="default" onClick={handleCreate}>
               생성
             </Button>
           </>
@@ -586,7 +586,7 @@ export const ManagementPage: React.FC = () => {
           <>
             <Button
               variant="secondary"
-              size="md"
+              size="default"
               onClick={() => {
                 setIsEditModalOpen(false);
                 setUserFormData({});
@@ -596,7 +596,7 @@ export const ManagementPage: React.FC = () => {
             >
               취소
             </Button>
-            <Button variant="primary" size="md" onClick={handleUpdate}>
+            <Button variant="primary" size="default" onClick={handleUpdate}>
               수정 완료
             </Button>
           </>
