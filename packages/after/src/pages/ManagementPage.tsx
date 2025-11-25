@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { Button, Badge } from "../components/atoms";
-import { Alert, Table, Modal } from "../components/organisms";
+import React, { useState, useEffect, useCallback } from "react";
+import { Button } from "../components/atoms";
+import { Alert, Table, Modal, Card } from "../components/organisms";
 import { FormInput, FormSelect, FormTextarea } from "../components/molecules";
 import { userService } from "../services/userService";
 import { postService } from "../services/postService";
 import type { User } from "../services/userService";
 import type { Post } from "../services/postService";
-import "../styles/components.css";
 
 type EntityType = "user" | "post";
 type Entity = User | Post;
+
+type UserFormData = {
+  username?: string;
+  email?: string;
+  role?: "admin" | "moderator" | "user";
+  status?: "active" | "inactive" | "suspended";
+};
+
+type PostFormData = {
+  title?: string;
+  content?: string;
+  author?: string;
+  category?: string;
+  status?: "draft" | "published" | "archived";
+};
 
 export const ManagementPage: React.FC = () => {
   const [entityType, setEntityType] = useState<EntityType>("post");
@@ -22,17 +36,10 @@ export const ManagementPage: React.FC = () => {
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [formData, setFormData] = useState<any>({});
+  const [userFormData, setUserFormData] = useState<UserFormData>({});
+  const [postFormData, setPostFormData] = useState<PostFormData>({});
 
-  useEffect(() => {
-    loadData();
-    setFormData({});
-    setIsCreateModalOpen(false);
-    setIsEditModalOpen(false);
-    setSelectedItem(null);
-  }, [entityType]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       let result: Entity[];
 
@@ -43,40 +50,62 @@ export const ManagementPage: React.FC = () => {
       }
 
       setData(result);
-    } catch (error: any) {
+    } catch {
       setErrorMessage("데이터를 불러오는데 실패했습니다");
       setShowErrorAlert(true);
     }
-  };
+  }, [entityType]);
+
+  useEffect(() => {
+    loadData();
+    setUserFormData({});
+    setPostFormData({});
+    setIsCreateModalOpen(false);
+    setIsEditModalOpen(false);
+    setSelectedItem(null);
+  }, [entityType, loadData]);
 
   const handleCreate = async () => {
     try {
       if (entityType === "user") {
+        if (!userFormData.username || !userFormData.email) {
+          throw new Error("사용자명과 이메일은 필수입니다");
+        }
         await userService.create({
-          username: formData.username,
-          email: formData.email,
-          role: formData.role || "user",
-          status: formData.status || "active",
+          username: userFormData.username,
+          email: userFormData.email,
+          role: userFormData.role || "user",
+          status: userFormData.status || "active",
         });
       } else {
+        if (
+          !postFormData.title ||
+          !postFormData.author ||
+          !postFormData.category
+        ) {
+          throw new Error("제목, 작성자, 카테고리는 필수입니다");
+        }
         await postService.create({
-          title: formData.title,
-          content: formData.content || "",
-          author: formData.author,
-          category: formData.category,
-          status: formData.status || "draft",
+          title: postFormData.title,
+          content: postFormData.content || "",
+          author: postFormData.author,
+          category: postFormData.category,
+          status: postFormData.status || "draft",
         });
       }
 
       await loadData();
       setIsCreateModalOpen(false);
-      setFormData({});
+      setUserFormData({});
+      setPostFormData({});
       setAlertMessage(
         `${entityType === "user" ? "사용자" : "게시글"}가 생성되었습니다`
       );
       setShowSuccessAlert(true);
-    } catch (error: any) {
-      setErrorMessage(error.message || "생성에 실패했습니다");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "생성에 실패했습니다";
+      setErrorMessage(errorMessage);
       setShowErrorAlert(true);
     }
   };
@@ -86,7 +115,7 @@ export const ManagementPage: React.FC = () => {
 
     if (entityType === "user") {
       const user = item as User;
-      setFormData({
+      setUserFormData({
         username: user.username,
         email: user.email,
         role: user.role,
@@ -94,7 +123,7 @@ export const ManagementPage: React.FC = () => {
       });
     } else {
       const post = item as Post;
-      setFormData({
+      setPostFormData({
         title: post.title,
         content: post.content,
         author: post.author,
@@ -111,21 +140,24 @@ export const ManagementPage: React.FC = () => {
 
     try {
       if (entityType === "user") {
-        await userService.update(selectedItem.id, formData);
+        await userService.update(selectedItem.id, userFormData);
       } else {
-        await postService.update(selectedItem.id, formData);
+        await postService.update(selectedItem.id, postFormData);
       }
 
       await loadData();
       setIsEditModalOpen(false);
-      setFormData({});
+      setUserFormData({});
+      setPostFormData({});
       setSelectedItem(null);
       setAlertMessage(
         `${entityType === "user" ? "사용자" : "게시글"}가 수정되었습니다`
       );
       setShowSuccessAlert(true);
-    } catch (error: any) {
-      setErrorMessage(error.message || "수정에 실패했습니다");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "수정에 실패했습니다";
+      setErrorMessage(errorMessage);
       setShowErrorAlert(true);
     }
   };
@@ -143,8 +175,10 @@ export const ManagementPage: React.FC = () => {
       await loadData();
       setAlertMessage("삭제되었습니다");
       setShowSuccessAlert(true);
-    } catch (error: any) {
-      setErrorMessage(error.message || "삭제에 실패했습니다");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "삭제에 실패했습니다";
+      setErrorMessage(errorMessage);
       setShowErrorAlert(true);
     }
   };
@@ -169,8 +203,10 @@ export const ManagementPage: React.FC = () => {
         action === "publish" ? "게시" : action === "archive" ? "보관" : "복원";
       setAlertMessage(`${message}되었습니다`);
       setShowSuccessAlert(true);
-    } catch (error: any) {
-      setErrorMessage(error.message || "작업에 실패했습니다");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "작업에 실패했습니다";
+      setErrorMessage(errorMessage);
       setShowErrorAlert(true);
     }
   };
@@ -259,73 +295,35 @@ export const ManagementPage: React.FC = () => {
   const stats = getStats();
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f0f0f0" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
-        <div style={{ marginBottom: "20px" }}>
-          <h1
-            style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              marginBottom: "5px",
-              color: "#333",
-            }}
-          >
-            관리 시스템
-          </h1>
-          <p style={{ color: "#666", fontSize: "14px" }}>
-            사용자와 게시글을 관리하세요
-          </p>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-[1200px] mx-auto p-5">
+        <div className="mb-5">
+          <h1 className="text-2xl font-bold mb-1 text-gray-800">관리 시스템</h1>
+          <p className="text-gray-600 text-sm">사용자와 게시글을 관리하세요</p>
         </div>
 
-        <div
-          style={{
-            background: "white",
-            border: "1px solid #ddd",
-            padding: "10px",
-          }}
-        >
-          <div
-            style={{
-              marginBottom: "15px",
-              borderBottom: "2px solid #ccc",
-              paddingBottom: "5px",
-            }}
-          >
-            <button
-              onClick={() => setEntityType("post")}
-              style={{
-                padding: "8px 16px",
-                marginRight: "5px",
-                fontSize: "14px",
-                fontWeight: entityType === "post" ? "bold" : "normal",
-                border: "1px solid #999",
-                background: entityType === "post" ? "#1976d2" : "#f5f5f5",
-                color: entityType === "post" ? "white" : "#333",
-                cursor: "pointer",
-                borderRadius: "3px",
-              }}
-            >
-              게시글
-            </button>
-            <button
-              onClick={() => setEntityType("user")}
-              style={{
-                padding: "8px 16px",
-                fontSize: "14px",
-                fontWeight: entityType === "user" ? "bold" : "normal",
-                border: "1px solid #999",
-                background: entityType === "user" ? "#1976d2" : "#f5f5f5",
-                color: entityType === "user" ? "white" : "#333",
-                cursor: "pointer",
-                borderRadius: "3px",
-              }}
-            >
-              사용자
-            </button>
+        <Card variant="default">
+          <div className="mb-4 border-b-2 border-gray-300 pb-2">
+            <div className="flex gap-2">
+              <Button
+                variant={entityType === "post" ? "primary" : "secondary"}
+                size="md"
+                onClick={() => setEntityType("post")}
+              >
+                게시글
+              </Button>
+              <Button
+                variant={entityType === "user" ? "primary" : "secondary"}
+                size="md"
+                onClick={() => setEntityType("user")}
+              >
+                사용자
+              </Button>
+            </div>
           </div>
 
           <div>
-            <div style={{ marginBottom: "15px", textAlign: "right" }}>
+            <div className="mb-4 text-right">
               <Button
                 variant="primary"
                 size="md"
@@ -336,7 +334,7 @@ export const ManagementPage: React.FC = () => {
             </div>
 
             {showSuccessAlert && (
-              <div style={{ marginBottom: "10px" }}>
+              <div className="mb-2">
                 <Alert
                   variant="success"
                   title="성공"
@@ -348,7 +346,7 @@ export const ManagementPage: React.FC = () => {
             )}
 
             {showErrorAlert && (
-              <div style={{ marginBottom: "10px" }}>
+              <div className="mb-2">
                 <Alert
                   variant="error"
                   title="오류"
@@ -359,162 +357,52 @@ export const ManagementPage: React.FC = () => {
               </div>
             )}
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-                gap: "10px",
-                marginBottom: "15px",
-              }}
-            >
-              <div
-                style={{
-                  padding: "12px 15px",
-                  background: "#e3f2fd",
-                  border: "1px solid #90caf9",
-                  borderRadius: "3px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    marginBottom: "4px",
-                  }}
-                >
-                  전체
-                </div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#1976d2",
-                  }}
-                >
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-2.5 mb-4">
+              <div className="p-3 bg-blue-50 border border-blue-300 rounded-sm">
+                <div className="text-xs text-gray-600 mb-1">전체</div>
+                <div className="text-2xl font-bold text-blue-700">
                   {stats.total}
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "12px 15px",
-                  background: "#e8f5e9",
-                  border: "1px solid #81c784",
-                  borderRadius: "3px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    marginBottom: "4px",
-                  }}
-                >
+              <div className="p-3 bg-green-50 border border-green-400 rounded-sm">
+                <div className="text-xs text-gray-600 mb-1">
                   {stats.stat1.label}
                 </div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#388e3c",
-                  }}
-                >
+                <div className="text-2xl font-bold text-green-700">
                   {stats.stat1.value}
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "12px 15px",
-                  background: "#fff3e0",
-                  border: "1px solid #ffb74d",
-                  borderRadius: "3px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    marginBottom: "4px",
-                  }}
-                >
+              <div className="p-3 bg-orange-50 border border-orange-400 rounded-sm">
+                <div className="text-xs text-gray-600 mb-1">
                   {stats.stat2.label}
                 </div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#f57c00",
-                  }}
-                >
+                <div className="text-2xl font-bold text-orange-700">
                   {stats.stat2.value}
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "12px 15px",
-                  background: "#ffebee",
-                  border: "1px solid #e57373",
-                  borderRadius: "3px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    marginBottom: "4px",
-                  }}
-                >
+              <div className="p-3 bg-red-50 border border-red-300 rounded-sm">
+                <div className="text-xs text-gray-600 mb-1">
                   {stats.stat3.label}
                 </div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#d32f2f",
-                  }}
-                >
+                <div className="text-2xl font-bold text-red-700">
                   {stats.stat3.value}
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "12px 15px",
-                  background: "#f5f5f5",
-                  border: "1px solid #bdbdbd",
-                  borderRadius: "3px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    marginBottom: "4px",
-                  }}
-                >
+              <div className="p-3 bg-gray-100 border border-gray-400 rounded-sm">
+                <div className="text-xs text-gray-600 mb-1">
                   {stats.stat4.label}
                 </div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#424242",
-                  }}
-                >
+                <div className="text-2xl font-bold text-gray-700">
                   {stats.stat4.value}
                 </div>
               </div>
             </div>
 
-            <div
-              style={{
-                border: "1px solid #ddd",
-                background: "white",
-                overflow: "auto",
-              }}
-            >
+            <div className="border border-gray-300 bg-white overflow-auto rounded-sm">
               <Table
                 columns={renderTableColumns()}
                 data={data}
@@ -529,14 +417,15 @@ export const ManagementPage: React.FC = () => {
               />
             </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       <Modal
         isOpen={isCreateModalOpen}
         onClose={() => {
           setIsCreateModalOpen(false);
-          setFormData({});
+          setUserFormData({});
+          setPostFormData({});
         }}
         title={`새 ${entityType === "user" ? "사용자" : "게시글"} 만들기`}
         size="large"
@@ -548,7 +437,8 @@ export const ManagementPage: React.FC = () => {
               size="md"
               onClick={() => {
                 setIsCreateModalOpen(false);
-                setFormData({});
+                setUserFormData({});
+                setPostFormData({});
               }}
             >
               취소
@@ -564,9 +454,9 @@ export const ManagementPage: React.FC = () => {
             <>
               <FormInput
                 name="username"
-                value={formData.username || ""}
+                value={userFormData.username || ""}
                 onChange={(value) =>
-                  setFormData({ ...formData, username: value })
+                  setUserFormData({ ...userFormData, username: value })
                 }
                 label="사용자명"
                 placeholder="사용자명을 입력하세요"
@@ -576,8 +466,10 @@ export const ManagementPage: React.FC = () => {
               />
               <FormInput
                 name="email"
-                value={formData.email || ""}
-                onChange={(value) => setFormData({ ...formData, email: value })}
+                value={userFormData.email || ""}
+                onChange={(value) =>
+                  setUserFormData({ ...userFormData, email: value })
+                }
                 label="이메일"
                 placeholder="이메일을 입력하세요"
                 type="email"
@@ -585,18 +477,15 @@ export const ManagementPage: React.FC = () => {
                 width="full"
                 fieldType="email"
               />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
-                }}
-              >
+              <div className="grid grid-cols-2 gap-4">
                 <FormSelect
                   name="role"
-                  value={formData.role || "user"}
+                  value={userFormData.role || "user"}
                   onChange={(value) =>
-                    setFormData({ ...formData, role: value })
+                    setUserFormData({
+                      ...userFormData,
+                      role: value as "admin" | "moderator" | "user",
+                    })
                   }
                   options={[
                     { value: "user", label: "사용자" },
@@ -608,9 +497,12 @@ export const ManagementPage: React.FC = () => {
                 />
                 <FormSelect
                   name="status"
-                  value={formData.status || "active"}
+                  value={userFormData.status || "active"}
                   onChange={(value) =>
-                    setFormData({ ...formData, status: value })
+                    setUserFormData({
+                      ...userFormData,
+                      status: value as "active" | "inactive" | "suspended",
+                    })
                   }
                   options={[
                     { value: "active", label: "활성" },
@@ -626,26 +518,22 @@ export const ManagementPage: React.FC = () => {
             <>
               <FormInput
                 name="title"
-                value={formData.title || ""}
-                onChange={(value) => setFormData({ ...formData, title: value })}
+                value={postFormData.title || ""}
+                onChange={(value) =>
+                  setPostFormData({ ...postFormData, title: value })
+                }
                 label="제목"
                 placeholder="게시글 제목을 입력하세요"
                 required
                 width="full"
                 fieldType="postTitle"
               />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
-                }}
-              >
+              <div className="grid grid-cols-2 gap-4">
                 <FormInput
                   name="author"
-                  value={formData.author || ""}
+                  value={postFormData.author || ""}
                   onChange={(value) =>
-                    setFormData({ ...formData, author: value })
+                    setPostFormData({ ...postFormData, author: value })
                   }
                   label="작성자"
                   placeholder="작성자명"
@@ -654,9 +542,9 @@ export const ManagementPage: React.FC = () => {
                 />
                 <FormSelect
                   name="category"
-                  value={formData.category || ""}
+                  value={postFormData.category || ""}
                   onChange={(value) =>
-                    setFormData({ ...formData, category: value })
+                    setPostFormData({ ...postFormData, category: value })
                   }
                   options={[
                     { value: "development", label: "Development" },
@@ -670,9 +558,9 @@ export const ManagementPage: React.FC = () => {
               </div>
               <FormTextarea
                 name="content"
-                value={formData.content || ""}
+                value={postFormData.content || ""}
                 onChange={(value) =>
-                  setFormData({ ...formData, content: value })
+                  setPostFormData({ ...postFormData, content: value })
                 }
                 label="내용"
                 placeholder="게시글 내용을 입력하세요"
@@ -687,7 +575,8 @@ export const ManagementPage: React.FC = () => {
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
-          setFormData({});
+          setUserFormData({});
+          setPostFormData({});
           setSelectedItem(null);
         }}
         title={`${entityType === "user" ? "사용자" : "게시글"} 수정`}
@@ -700,7 +589,8 @@ export const ManagementPage: React.FC = () => {
               size="md"
               onClick={() => {
                 setIsEditModalOpen(false);
-                setFormData({});
+                setUserFormData({});
+                setPostFormData({});
                 setSelectedItem(null);
               }}
             >
@@ -725,9 +615,9 @@ export const ManagementPage: React.FC = () => {
             <>
               <FormInput
                 name="username"
-                value={formData.username || ""}
+                value={userFormData.username || ""}
                 onChange={(value) =>
-                  setFormData({ ...formData, username: value })
+                  setUserFormData({ ...userFormData, username: value })
                 }
                 label="사용자명"
                 placeholder="사용자명을 입력하세요"
@@ -737,8 +627,10 @@ export const ManagementPage: React.FC = () => {
               />
               <FormInput
                 name="email"
-                value={formData.email || ""}
-                onChange={(value) => setFormData({ ...formData, email: value })}
+                value={userFormData.email || ""}
+                onChange={(value) =>
+                  setUserFormData({ ...userFormData, email: value })
+                }
                 label="이메일"
                 placeholder="이메일을 입력하세요"
                 type="email"
@@ -746,18 +638,15 @@ export const ManagementPage: React.FC = () => {
                 width="full"
                 fieldType="email"
               />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
-                }}
-              >
+              <div className="grid grid-cols-2 gap-4">
                 <FormSelect
                   name="role"
-                  value={formData.role || "user"}
+                  value={userFormData.role || "user"}
                   onChange={(value) =>
-                    setFormData({ ...formData, role: value })
+                    setUserFormData({
+                      ...userFormData,
+                      role: value as "admin" | "moderator" | "user",
+                    })
                   }
                   options={[
                     { value: "user", label: "사용자" },
@@ -769,9 +658,12 @@ export const ManagementPage: React.FC = () => {
                 />
                 <FormSelect
                   name="status"
-                  value={formData.status || "active"}
+                  value={userFormData.status || "active"}
                   onChange={(value) =>
-                    setFormData({ ...formData, status: value })
+                    setUserFormData({
+                      ...userFormData,
+                      status: value as "active" | "inactive" | "suspended",
+                    })
                   }
                   options={[
                     { value: "active", label: "활성" },
@@ -787,26 +679,22 @@ export const ManagementPage: React.FC = () => {
             <>
               <FormInput
                 name="title"
-                value={formData.title || ""}
-                onChange={(value) => setFormData({ ...formData, title: value })}
+                value={postFormData.title || ""}
+                onChange={(value) =>
+                  setPostFormData({ ...postFormData, title: value })
+                }
                 label="제목"
                 placeholder="게시글 제목을 입력하세요"
                 required
                 width="full"
                 fieldType="postTitle"
               />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
-                }}
-              >
+              <div className="grid grid-cols-2 gap-4">
                 <FormInput
                   name="author"
-                  value={formData.author || ""}
+                  value={postFormData.author || ""}
                   onChange={(value) =>
-                    setFormData({ ...formData, author: value })
+                    setPostFormData({ ...postFormData, author: value })
                   }
                   label="작성자"
                   placeholder="작성자명"
@@ -815,9 +703,9 @@ export const ManagementPage: React.FC = () => {
                 />
                 <FormSelect
                   name="category"
-                  value={formData.category || ""}
+                  value={postFormData.category || ""}
                   onChange={(value) =>
-                    setFormData({ ...formData, category: value })
+                    setPostFormData({ ...postFormData, category: value })
                   }
                   options={[
                     { value: "development", label: "Development" },
@@ -831,9 +719,9 @@ export const ManagementPage: React.FC = () => {
               </div>
               <FormTextarea
                 name="content"
-                value={formData.content || ""}
+                value={postFormData.content || ""}
                 onChange={(value) =>
-                  setFormData({ ...formData, content: value })
+                  setPostFormData({ ...postFormData, content: value })
                 }
                 label="내용"
                 placeholder="게시글 내용을 입력하세요"
