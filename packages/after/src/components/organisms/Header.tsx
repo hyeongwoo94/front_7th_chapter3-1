@@ -1,102 +1,83 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
+/**
+ * Header 컴포넌트
+ * 
+ * 디자인 토큰을 사용하여 스타일링된 헤더 컴포넌트입니다.
+ */
 export const Header: React.FC = () => {
   return (
-    <header style={{
-      backgroundColor: '#ffffff',
-      borderBottom: '1px solid #e5e7eb',
-      boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-    }}>
-      <div style={{
-        maxWidth: '1400px',
-        margin: '0 auto',
-        padding: '0 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        height: '64px',
-      }}>
+    <header
+      className={cn(
+        "bg-[var(--color-bg-primary)]",
+        "border-b border-[#e5e7eb]",
+        "shadow-[var(--shadow-header)]",
+        "sticky top-0",
+        "z-[var(--z-index-header)]"
+      )}
+    >
+      <div
+        className={cn(
+          "max-w-[var(--header-max-width)]",
+          "mx-auto",
+          "px-6",
+          "flex justify-between items-center",
+          "h-[var(--header-height)]"
+        )}
+      >
         {/* Logo */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#007bff',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#ffffff',
-            fontWeight: 'bold',
-            fontSize: '20px',
-          }}>
+        <div className="flex items-center gap-[var(--logo-gap)]">
+          <div
+            className={cn(
+              "w-[var(--logo-size)]",
+              "h-[var(--logo-size)]",
+              "bg-[#007bff]",
+              "rounded-lg",
+              "flex items-center justify-center",
+              "text-white font-bold text-[20px]"
+            )}
+          >
             L
           </div>
           <div>
-            <h1 style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: '#1a202c',
-              margin: 0,
-              lineHeight: 1,
-            }}>
+            <h1
+              className={cn(
+                "text-lg font-bold text-[#1a202c] m-0 leading-none"
+              )}
+            >
               Hanghae Company
             </h1>
-            <p style={{
-              fontSize: '11px',
-              color: '#718096',
-              margin: 0,
-              lineHeight: 1,
-              marginTop: '2px',
-            }}>
+            <p
+              className={cn(
+                "text-[11px] text-[#718096] m-0 leading-none mt-0.5"
+              )}
+            >
               Design System Migration Project
             </p>
           </div>
         </div>
 
-
         {/* User Info */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}>
-          <div style={{
-            textAlign: 'right',
-          }}>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#1a202c',
-            }}>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <div className="text-[var(--font-size-md)] font-semibold text-[#1a202c]">
               Demo User
             </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#718096',
-            }}>
+            <div className="text-[var(--font-size-sm)] text-[#718096]">
               demo@example.com
             </div>
           </div>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            backgroundColor: '#e3f2fd',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#007bff',
-            fontWeight: '600',
-            fontSize: '16px',
-          }}>
+          <div
+            className={cn(
+              "w-[var(--logo-size)]",
+              "h-[var(--logo-size)]",
+              "rounded-full",
+              "bg-[#e3f2fd]",
+              "flex items-center justify-center",
+              "text-[#007bff] font-semibold text-base"
+            )}
+          >
             DU
           </div>
         </div>

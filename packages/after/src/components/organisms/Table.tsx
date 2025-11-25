@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Badge } from '../atoms/Badge';
+import {
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import { Input } from '../ui/input';
 import { Button } from '../atoms/Button';
+import { Badge } from '../atoms/Badge';
+import { cn } from '@/lib/utils';
 
 interface Column {
   key: string;
@@ -9,7 +19,12 @@ interface Column {
   sortable?: boolean;
 }
 
-// 🚨 Bad Practice: UI 컴포넌트가 도메인 타입을 알고 있음
+/**
+ * Table 컴포넌트
+ * 
+ * shadcn/ui Table을 사용한 테이블 컴포넌트입니다.
+ * 도메인 로직은 하위 호환성을 위해 유지되지만, 권장하지 않습니다.
+ */
 interface TableProps {
   columns?: Column[];
   data?: any[];
@@ -21,7 +36,7 @@ interface TableProps {
   sortable?: boolean;
   onRowClick?: (row: any) => void;
 
-  // 🚨 도메인 관심사 추가
+  // 하위 호환성을 위한 도메인 props (권장하지 않음)
   entityType?: 'user' | 'post';
   onEdit?: (item: any) => void;
   onDelete?: (id: number) => void;
@@ -95,37 +110,28 @@ export const Table: React.FC<TableProps> = ({
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
-  const tableClasses = [
-    'table',
-    striped && 'table-striped',
-    bordered && 'table-bordered',
-    hover && 'table-hover',
-  ].filter(Boolean).join(' ');
-
   const actualColumns = columns || (tableData[0] ? Object.keys(tableData[0]).map(key => ({ key, header: key, width: undefined })) : []);
 
-  // 🚨 Bad Practice: Table 컴포넌트가 도메인별 렌더링 로직을 알고 있음
+  // 도메인별 셀 렌더링 (하위 호환성)
   const renderCell = (row: any, columnKey: string) => {
     const value = row[columnKey];
 
-    // 도메인별 특수 렌더링
     if (entityType === 'user') {
       if (columnKey === 'role') {
-        return <Badge userRole={value} showIcon />;
+        return <Badge userRole={value} />;
       }
       if (columnKey === 'status') {
-        // User status를 Badge status로 변환
         const badgeStatus =
           value === 'active' ? 'published' :
           value === 'inactive' ? 'draft' : 'rejected';
-        return <Badge status={badgeStatus} showIcon />;
+        return <Badge status={badgeStatus} />;
       }
       if (columnKey === 'lastLogin') {
         return value || '-';
       }
       if (columnKey === 'actions') {
         return (
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="flex gap-2">
             <Button size="sm" variant="primary" onClick={() => onEdit?.(row)}>
               수정
             </Button>
@@ -147,14 +153,14 @@ export const Table: React.FC<TableProps> = ({
         return <Badge type={type} pill>{value}</Badge>;
       }
       if (columnKey === 'status') {
-        return <Badge status={value} showIcon />;
+        return <Badge status={value} />;
       }
       if (columnKey === 'views') {
         return value?.toLocaleString() || '0';
       }
       if (columnKey === 'actions') {
         return (
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="flex gap-2 flex-wrap">
             <Button size="sm" variant="primary" onClick={() => onEdit?.(row)}>
               수정
             </Button>
@@ -193,7 +199,6 @@ export const Table: React.FC<TableProps> = ({
       }
     }
 
-    // React Element면 그대로 렌더링
     if (React.isValidElement(value)) {
       return value;
     }
@@ -202,96 +207,89 @@ export const Table: React.FC<TableProps> = ({
   };
 
   return (
-    <div className="table-container">
+    <div className="overflow-x-auto">
       {searchable && (
-        <div style={{ marginBottom: '16px' }}>
-          <input
+        <div className="mb-4">
+          <Input
             type="text"
             placeholder="검색..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              width: '300px',
-            }}
+            className="w-[300px]"
           />
         </div>
       )}
 
-      <table className={tableClasses}>
-        <thead>
-          <tr>
+      <UITable
+        className={cn(
+          'table',
+          striped && '[&_tbody_tr:nth-child(even)]:bg-[var(--color-bg-tertiary)]',
+          bordered && 'border border-[var(--color-border-tertiary)] [&_th]:border [&_td]:border [&_th]:border-[var(--color-border-tertiary)] [&_td]:border-[var(--color-border-tertiary)]'
+        )}
+      >
+        <TableHeader>
+          <TableRow>
             {actualColumns.map((column) => (
-              <th
+              <TableHead
                 key={column.key}
                 style={column.width ? { width: column.width } : undefined}
                 onClick={() => sortable && handleSort(column.key)}
+                className={cn(
+                  sortable && 'cursor-pointer',
+                  sortColumn === column.key && 'bg-[var(--color-bg-secondary)]'
+                )}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: sortable ? 'pointer' : 'default' }}>
+                <div className="flex items-center gap-1">
                   {column.header}
                   {sortable && sortColumn === column.key && (
                     <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </div>
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {paginatedData.map((row, rowIndex) => (
-            <tr
+            <TableRow
               key={rowIndex}
               onClick={() => onRowClick?.(row)}
-              style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+              className={cn(
+                hover && 'cursor-pointer',
+                striped && rowIndex % 2 === 1 && 'bg-[var(--color-bg-tertiary)]'
+              )}
             >
               {actualColumns.map((column) => (
-                <td key={column.key}>
+                <TableCell key={column.key}>
                   {entityType ? renderCell(row, column.key) : row[column.key]}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </UITable>
 
       {totalPages > 1 && (
-        <div style={{
-          marginTop: '16px',
-          display: 'flex',
-          gap: '8px',
-          justifyContent: 'center',
-        }}>
-          <button
+        <div className="mt-4 flex gap-2 justify-center items-center">
+          <Button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            style={{
-              padding: '6px 12px',
-              border: '1px solid #ddd',
-              background: 'white',
-              borderRadius: '4px',
-              cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-            }}
+            size="sm"
+            variant="secondary"
           >
             이전
-          </button>
-          <span style={{ padding: '6px 12px' }}>
+          </Button>
+          <span className="px-3 py-1.5">
             {currentPage} / {totalPages}
           </span>
-          <button
+          <Button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            style={{
-              padding: '6px 12px',
-              border: '1px solid #ddd',
-              background: 'white',
-              borderRadius: '4px',
-              cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-            }}
+            size="sm"
+            variant="secondary"
           >
             다음
-          </button>
+          </Button>
         </div>
       )}
     </div>

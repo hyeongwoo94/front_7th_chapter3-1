@@ -1,6 +1,18 @@
 import React from 'react';
+import {
+  Alert as UIAlert,
+  AlertTitle,
+  AlertDescription,
+  AlertIcon,
+  AlertClose,
+} from '../ui/alert';
+import { cn } from '@/lib/utils';
 
-// Alert - Different styling approach with inconsistent variants
+/**
+ * Alert 컴포넌트
+ * 
+ * shadcn/ui Alert를 사용한 알림 컴포넌트입니다.
+ */
 interface AlertProps {
   children: React.ReactNode;
   variant?: 'info' | 'success' | 'warning' | 'error' | 'default';
@@ -26,20 +38,21 @@ export const Alert: React.FC<AlertProps> = ({
     }
   };
 
-  const alertClasses = ['alert', `alert-${variant}`].join(' ');
-
   return (
-    <div className={alertClasses}>
-      {showIcon && <div className="alert-icon">{getIcon()}</div>}
-      <div className="alert-content">
-        {title && <div className="alert-title">{title}</div>}
+    <UIAlert
+      variant={variant}
+      className={cn('alert', `alert-${variant}`)}
+    >
+      {showIcon && <AlertIcon className="alert-icon">{getIcon()}</AlertIcon>}
+      <AlertDescription className="alert-content">
+        {title && <AlertTitle className="alert-title">{title}</AlertTitle>}
         <div className="alert-body">{children}</div>
-      </div>
+      </AlertDescription>
       {onClose && (
-        <button onClick={onClose} className="alert-close">
+        <AlertClose onClick={onClose} className="alert-close">
           ×
-        </button>
+        </AlertClose>
       )}
-    </div>
+    </UIAlert>
   );
 };

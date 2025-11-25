@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { cn } from '@/lib/utils';
 
-// 🚨 Bad Practice: UI 컴포넌트가 도메인 규칙을 알고 있음
+/**
+ * FormInput 컴포넌트
+ * 
+ * shadcn/ui Input과 Label을 조합한 폼 입력 컴포넌트입니다.
+ * 검증 로직은 상위 컴포넌트나 react-hook-form과 zod를 사용하여 처리해야 합니다.
+ * 
+ * @deprecated fieldType, entityType, checkBusinessRules props는 하위 호환성을 위해 유지되지만,
+ * 검증 로직은 상위 컴포넌트에서 처리하는 것을 권장합니다.
+ */
 interface FormInputProps {
   name: string;
   value: string;
@@ -14,10 +25,10 @@ interface FormInputProps {
   helpText?: string;
   width?: 'small' | 'medium' | 'large' | 'full';
 
-  // 🚨 도메인 관심사 추가
+  // @deprecated 검증 로직은 상위 컴포넌트에서 처리하는 것을 권장합니다.
   fieldType?: 'username' | 'email' | 'postTitle' | 'slug' | 'normal';
-  entityType?: 'user' | 'post'; // 엔티티 타입까지 알고 있음
-  checkBusinessRules?: boolean; // 비즈니스 규칙 검사 여부
+  entityType?: 'user' | 'post';
+  checkBusinessRules?: boolean;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -38,13 +49,12 @@ export const FormInput: React.FC<FormInputProps> = ({
 }) => {
   const [internalError, setInternalError] = useState('');
 
-  // 🚨 Bad Practice: UI 컴포넌트가 비즈니스 규칙을 검증함
+  // @deprecated 검증 로직은 상위 컴포넌트에서 처리하는 것을 권장합니다.
   const validateField = (val: string) => {
     setInternalError('');
 
     if (!val) return;
 
-    // 기본 필드 타입 검증
     if (fieldType === 'username') {
       if (val.length < 3) {
         setInternalError('사용자명은 3자 이상이어야 합니다');
@@ -54,7 +64,6 @@ export const FormInput: React.FC<FormInputProps> = ({
         setInternalError('사용자명은 20자 이하여야 합니다');
       }
 
-      // 🚨 도메인 특화 검증: 예약어 체크
       if (checkBusinessRules) {
         const reservedWords = ['admin', 'root', 'system', 'administrator'];
         if (reservedWords.includes(val.toLowerCase())) {
@@ -66,7 +75,6 @@ export const FormInput: React.FC<FormInputProps> = ({
         setInternalError('올바른 이메일 형식이 아닙니다');
       }
 
-      // 🚨 비즈니스 규칙: User 엔티티의 이메일은 회사 도메인만
       if (checkBusinessRules && entityType === 'user') {
         if (!val.endsWith('@company.com') && !val.endsWith('@example.com')) {
           setInternalError('회사 이메일(@company.com 또는 @example.com)만 사용 가능합니다');
@@ -79,7 +87,6 @@ export const FormInput: React.FC<FormInputProps> = ({
         setInternalError('제목은 100자 이하여야 합니다');
       }
 
-      // 🚨 비즈니스 규칙: 금칙어 체크
       if (checkBusinessRules && entityType === 'post') {
         const bannedWords = ['광고', '스팸', '홍보'];
         const hasBannedWord = bannedWords.some(word => val.includes(word));
@@ -97,19 +104,28 @@ export const FormInput: React.FC<FormInputProps> = ({
   };
 
   const displayError = error || internalError;
-  const inputClasses = ['form-input', displayError && 'error', `input-width-${width}`].filter(Boolean).join(' ');
-  const helperClasses = ['form-helper-text', displayError && 'error'].filter(Boolean).join(' ');
+  
+  const widthClasses = {
+    small: 'w-[var(--input-width-small)]',
+    medium: 'w-[var(--input-width-medium)]',
+    large: 'w-[var(--input-width-large)]',
+    full: 'w-full',
+  };
+
+  const errorId = displayError ? `${name}-error` : undefined;
+  const helpId = helpText && !displayError ? `${name}-help` : undefined;
+  const ariaDescribedBy = [errorId, helpId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="form-group">
+    <div className="mb-4">
       {label && (
-        <label htmlFor={name} className="form-label">
+        <Label htmlFor={name} className="mb-1.5 block">
           {label}
-          {required && <span style={{ color: '#d32f2f' }}>*</span>}
-        </label>
+          {required && <span className="text-[var(--color-danger)] ml-1">*</span>}
+        </Label>
       )}
 
-      <input
+      <Input
         id={name}
         name={name}
         type={type}
@@ -118,11 +134,31 @@ export const FormInput: React.FC<FormInputProps> = ({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
-        className={inputClasses}
+        className={cn(
+          displayError && 'border-[var(--color-danger)]',
+          widthClasses[width]
+        )}
+        aria-invalid={displayError ? 'true' : undefined}
+        aria-describedby={ariaDescribedBy}
       />
 
-      {displayError && <span className={helperClasses}>{displayError}</span>}
-      {helpText && !displayError && <span className="form-helper-text">{helpText}</span>}
+      {displayError && (
+        <p
+          id={errorId}
+          className="text-[var(--font-size-sm)] text-[var(--color-danger)] font-[var(--font-family-primary)] mt-1"
+          role="alert"
+        >
+          {displayError}
+        </p>
+      )}
+      {helpText && !displayError && (
+        <p
+          id={helpId}
+          className="text-[var(--font-size-sm)] text-[var(--color-text-tertiary)] font-[var(--font-family-primary)] mt-1"
+        >
+          {helpText}
+        </p>
+      )}
     </div>
   );
 };

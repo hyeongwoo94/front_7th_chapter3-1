@@ -1,6 +1,22 @@
 import React from 'react';
+import { Badge as UIBadge } from '../ui/badge';
+import {
+  getBadgeVariantFromStatus,
+  getBadgeLabelFromStatus,
+  getBadgeVariantFromUserRole,
+  getBadgeLabelFromUserRole,
+  getBadgeVariantFromPriority,
+  getBadgeLabelFromPriority,
+  getBadgeVariantFromPaymentStatus,
+  getBadgeLabelFromPaymentStatus,
+} from '@/lib/badge-mappers';
 
-
+/**
+ * Badge 컴포넌트
+ * 
+ * shadcn/ui Badge를 기반으로 하되, 하위 호환성을 위해 일부 도메인 props를 지원합니다.
+ * 도메인 매핑은 별도 유틸리티 함수로 분리되어 있습니다.
+ */
 interface BadgeProps {
   children?: React.ReactNode;
   type?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
@@ -24,105 +40,40 @@ export const Badge: React.FC<BadgeProps> = ({
   paymentStatus,
   showIcon = false,
 }) => {
-  void showIcon;
+  void showIcon; // 향후 아이콘 기능 추가 시 사용
 
-  let actualType = type;
+  let actualVariant = type;
   let actualContent = children;
 
+  // 도메인 매핑 적용
   if (status) {
-    switch (status) {
-      case 'published':
-        actualType = 'success';
-        actualContent = actualContent || '게시됨';
-        break;
-      case 'draft':
-        actualType = 'warning';
-        actualContent = actualContent || '임시저장';
-        break;
-      case 'archived':
-        actualType = 'secondary';
-        actualContent = actualContent || '보관됨';
-        break;
-      case 'pending':
-        actualType = 'info';
-        actualContent = actualContent || '대기중';
-        break;
-      case 'rejected':
-        actualType = 'danger';
-        actualContent = actualContent || '거부됨';
-        break;
-    }
+    actualVariant = getBadgeVariantFromStatus(status);
+    actualContent = actualContent || getBadgeLabelFromStatus(status);
+  } else if (userRole) {
+    actualVariant = getBadgeVariantFromUserRole(userRole);
+    actualContent = actualContent || getBadgeLabelFromUserRole(userRole);
+  } else if (priority) {
+    actualVariant = getBadgeVariantFromPriority(priority);
+    actualContent = actualContent || getBadgeLabelFromPriority(priority);
+  } else if (paymentStatus) {
+    actualVariant = getBadgeVariantFromPaymentStatus(paymentStatus);
+    actualContent = actualContent || getBadgeLabelFromPaymentStatus(paymentStatus);
   }
 
-  if (userRole) {
-    switch (userRole) {
-      case 'admin':
-        actualType = 'danger';
-        actualContent = actualContent || '관리자';
-        break;
-      case 'moderator':
-        actualType = 'warning';
-        actualContent = actualContent || '운영자';
-        break;
-      case 'user':
-        actualType = 'primary';
-        actualContent = actualContent || '사용자';
-        break;
-      case 'guest':
-        actualType = 'secondary';
-        actualContent = actualContent || '게스트';
-        break;
-    }
-  }
-
-  if (priority) {
-    switch (priority) {
-      case 'high':
-        actualType = 'danger';
-        actualContent = actualContent || '높음';
-        break;
-      case 'medium':
-        actualType = 'warning';
-        actualContent = actualContent || '보통';
-        break;
-      case 'low':
-        actualType = 'info';
-        actualContent = actualContent || '낮음';
-        break;
-    }
-  }
-
-  if (paymentStatus) {
-    switch (paymentStatus) {
-      case 'paid':
-        actualType = 'success';
-        actualContent = actualContent || '결제완료';
-        break;
-      case 'pending':
-        actualType = 'warning';
-        actualContent = actualContent || '결제대기';
-        break;
-      case 'failed':
-        actualType = 'danger';
-        actualContent = actualContent || '결제실패';
-        break;
-      case 'refunded':
-        actualType = 'secondary';
-        actualContent = actualContent || '환불됨';
-        break;
-    }
-  }
-
-  const classes = [
-    'badge',
-    `badge-${actualType}`,
-    `badge-${size}`,
-    pill && 'badge-pill',
-  ].filter(Boolean).join(' ');
+  // size 매핑
+  const sizeMap: Record<string, 'small' | 'medium' | 'large'> = {
+    small: 'small',
+    medium: 'medium',
+    large: 'large',
+  };
 
   return (
-    <span className={classes}>
+    <UIBadge
+      variant={actualVariant}
+      size={sizeMap[size]}
+      pill={pill}
+    >
       {actualContent}
-    </span>
+    </UIBadge>
   );
 };

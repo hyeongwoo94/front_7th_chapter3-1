@@ -1,6 +1,19 @@
 import React from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Label } from '../ui/label';
+import { cn } from '@/lib/utils';
 
-// Select Component - Inconsistent with Input component
+/**
+ * FormSelect 컴포넌트
+ * 
+ * shadcn/ui Select를 사용한 폼 셀렉트 컴포넌트입니다.
+ */
 interface Option {
   value: string;
   label: string;
@@ -33,39 +46,64 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   helpText,
   size = 'md',
 }) => {
-  void size; // Keep for API consistency but not used in rendering
-  const selectClasses = ['form-select', error && 'error'].filter(Boolean).join(' ');
-  const helperClasses = ['form-helper-text', error && 'error'].filter(Boolean).join(' ');
+  void size; // 향후 size 기능 추가 시 사용
+
+  const errorId = error ? `${name}-error` : undefined;
+  const helpId = helpText && !error ? `${name}-help` : undefined;
+  const ariaDescribedBy = [errorId, helpId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="form-group">
+    <div className="mb-4">
       {label && (
-        <label className="form-label">
+        <Label htmlFor={name} className="mb-1.5 block">
           {label}
-          {required && <span style={{ color: '#d32f2f' }}>*</span>}
-        </label>
+          {required && <span className="text-[var(--color-danger)] ml-1">*</span>}
+        </Label>
       )}
 
-      <select
-        name={name}
+      <Select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
+        onValueChange={onChange}
         disabled={disabled}
-        className={selectClasses}
       >
-        <option value="" disabled>
-          {placeholder}
-        </option>
+        <SelectTrigger
+          id={name}
+          name={name}
+          className={cn(
+            error && 'border-[var(--color-danger)]',
+            'w-full'
+          )}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={ariaDescribedBy}
+      >
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+            <SelectItem key={option.value} value={option.value}>
             {option.label}
-          </option>
+            </SelectItem>
         ))}
-      </select>
+        </SelectContent>
+      </Select>
 
-      {error && <span className={helperClasses}>{error}</span>}
-      {helpText && !error && <span className="form-helper-text">{helpText}</span>}
+      {error && (
+        <p
+          id={errorId}
+          className="text-[var(--font-size-sm)] text-[var(--color-danger)] font-[var(--font-family-primary)] mt-1"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+      {helpText && !error && (
+        <p
+          id={helpId}
+          className="text-[var(--font-size-sm)] text-[var(--color-text-tertiary)] font-[var(--font-family-primary)] mt-1"
+        >
+          {helpText}
+        </p>
+      )}
     </div>
   );
 };
