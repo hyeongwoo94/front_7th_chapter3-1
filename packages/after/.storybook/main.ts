@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -10,6 +11,18 @@ const config: StorybookConfig = {
   framework: {
     name: "@storybook/react-vite",
     options: {},
+  },
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      css: {
+        postcss: {
+          plugins: [
+            require("@tailwindcss/postcss"),
+            require("autoprefixer"),
+          ],
+        },
+      },
+    });
   },
 };
 export default config;

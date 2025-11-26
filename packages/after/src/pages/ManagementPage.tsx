@@ -219,7 +219,7 @@ export const ManagementPage: React.FC = () => {
         stat1: {
           label: "활성",
           value: users.filter((u) => u.status === "active").length,
-          color: "#2e7d32",
+          color: "rgb(56, 142, 60)",
         },
         stat2: {
           label: "비활성",

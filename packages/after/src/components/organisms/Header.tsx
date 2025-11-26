@@ -1,12 +1,33 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import { Moon, Sun } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 /**
  * Header 컴포넌트
- * 
+ *
  * 디자인 토큰을 사용하여 스타일링된 헤더 컴포넌트입니다.
  */
 export const Header: React.FC = () => {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [isDark]);
+
+  const toggleDarkMode = () => {
+    setIsDark((prev) => !prev);
+  };
   return (
     <header
       className={cn(
@@ -14,7 +35,8 @@ export const Header: React.FC = () => {
         "border-b border-[#e5e7eb]",
         "shadow-[var(--shadow-header)]",
         "sticky top-0",
-        "z-[var(--z-index-header)]"
+        "z-[var(--z-index-header)]",
+        "mx-auto"
       )}
     >
       <div
@@ -61,10 +83,16 @@ export const Header: React.FC = () => {
         {/* User Info */}
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-[var(--font-size-md)] font-semibold text-[#1a202c]">
+            <div
+              className="font-semibold text-[#1a202c]"
+              style={{ fontSize: "var(--font-size-md)" }}
+            >
               Demo User
             </div>
-            <div className="text-[var(--font-size-sm)] text-[#718096]">
+            <div
+              className="text-[#718096]"
+              style={{ fontSize: "var(--font-size-sm)" }}
+            >
               demo@example.com
             </div>
           </div>
@@ -80,6 +108,19 @@ export const Header: React.FC = () => {
           >
             DU
           </div>
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={toggleDarkMode}
+            aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+            className="rounded-full"
+          >
+            {isDark ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
         </div>
       </div>
     </header>

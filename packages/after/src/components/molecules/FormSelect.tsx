@@ -66,12 +66,12 @@ export const FormSelect: React.FC<FormSelectProps> = ({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         required={required}
-        className={cn(
-          error && 'border-[var(--color-danger)]',
-          'w-full'
-        )}
-        aria-invalid={error ? 'true' : undefined}
-        aria-describedby={ariaDescribedBy}
+          className={cn(
+            error && 'border-[var(--color-danger)]',
+            'w-full'
+          )}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={ariaDescribedBy}
       >
         {placeholder && (
           <NativeSelectOption value="" disabled>
@@ -88,7 +88,8 @@ export const FormSelect: React.FC<FormSelectProps> = ({
       {error && (
         <p
           id={errorId}
-          className="text-[var(--font-size-sm)] text-[var(--color-danger)] font-[var(--font-family-primary)] mt-1"
+          className="text-[var(--color-danger)] font-[var(--font-family-primary)] mt-1"
+          style={{ fontSize: "var(--font-size-sm)" }}
           role="alert"
         >
           {error}
@@ -97,7 +98,8 @@ export const FormSelect: React.FC<FormSelectProps> = ({
       {helpText && !error && (
         <p
           id={helpId}
-          className="text-[var(--font-size-sm)] text-[var(--color-text-tertiary)] font-[var(--font-family-primary)] mt-1"
+          className="text-[var(--color-text-tertiary)] font-[var(--font-family-primary)] mt-1"
+          style={{ fontSize: "var(--font-size-sm)" }}
         >
           {helpText}
         </p>

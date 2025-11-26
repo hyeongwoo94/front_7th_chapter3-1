@@ -16,9 +16,9 @@ const badgeVariants = cva(
         info: "bg-[var(--color-badge-info)] text-white",
       },
       size: {
-        small: "h-[var(--badge-height-small)] px-[4px] text-[var(--font-size-xs)]",
-        medium: "h-[var(--badge-height-medium)] px-[8px] text-[var(--font-size-sm)]",
-        large: "h-[var(--badge-height-large)] px-[10px] text-[var(--font-size-base)]",
+        small: "h-[var(--badge-height-small)] px-[4px]",
+        medium: "h-[var(--badge-height-medium)] px-[8px]",
+        large: "h-[var(--badge-height-large)] px-[10px]",
       },
     },
     defaultVariants: {
@@ -35,9 +35,16 @@ export interface BadgeProps
 }
 
 function Badge({ className, variant, size, pill, ...props }: BadgeProps) {
+  const fontSizeMap = {
+    small: "var(--font-size-xs)",
+    medium: "var(--font-size-sm)",
+    large: "var(--font-size-base)",
+  } as const;
+
   return (
     <span
       className={cn(badgeVariants({ variant, size }), pill && "rounded-[var(--radius-xl)]", className)}
+      style={{ fontSize: size ? fontSizeMap[size] : fontSizeMap.medium }}
       {...props}
     />
   )

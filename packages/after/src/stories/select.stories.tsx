@@ -34,7 +34,7 @@ export const Default: Story = {
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="옵션을 선택하세요" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white">
         <SelectItem value="option1">옵션 1</SelectItem>
         <SelectItem value="option2">옵션 2</SelectItem>
         <SelectItem value="option3">옵션 3</SelectItem>
@@ -49,7 +49,7 @@ export const WithDefaultValue: Story = {
       <SelectTrigger className="w-[180px]">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white">
         <SelectItem value="option1">옵션 1</SelectItem>
         <SelectItem value="option2">옵션 2</SelectItem>
         <SelectItem value="option3">옵션 3</SelectItem>
@@ -64,7 +64,7 @@ export const WithGroups: Story = {
       <SelectTrigger className="w-[200px]">
         <SelectValue placeholder="카테고리를 선택하세요" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white">
         <SelectGroup>
           <SelectLabel>프론트엔드</SelectLabel>
           <SelectItem value="react">React</SelectItem>
@@ -89,7 +89,7 @@ export const Disabled: Story = {
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="비활성화됨" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white">
         <SelectItem value="option1">옵션 1</SelectItem>
         <SelectItem value="option2">옵션 2</SelectItem>
         <SelectItem value="option3">옵션 3</SelectItem>
@@ -104,7 +104,7 @@ export const WithDisabledItems: Story = {
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="옵션을 선택하세요" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white">
         <SelectItem value="option1">옵션 1</SelectItem>
         <SelectItem value="option2" disabled>옵션 2 (비활성화)</SelectItem>
         <SelectItem value="option3">옵션 3</SelectItem>
@@ -119,7 +119,7 @@ export const LongList: Story = {
       <SelectTrigger className="w-[200px]">
         <SelectValue placeholder="긴 목록에서 선택" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white">
         {Array.from({ length: 20 }, (_, i) => (
           <SelectItem key={i} value={`option${i + 1}`}>
             옵션 {i + 1}

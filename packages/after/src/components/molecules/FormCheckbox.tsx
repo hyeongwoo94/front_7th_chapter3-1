@@ -51,10 +51,11 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
         <Label
           htmlFor={name}
           className={cn(
-            "text-[var(--font-size-md)] text-[var(--color-text-secondary)] cursor-pointer leading-[var(--line-height-normal)] select-none font-[var(--font-family-secondary)]",
+            "text-[var(--color-text-secondary)] cursor-pointer leading-[var(--line-height-normal)] select-none font-[var(--font-family-secondary)]",
             error && "text-[var(--color-danger)]",
             disabled && "cursor-not-allowed"
           )}
+          style={{ fontSize: "var(--font-size-md)" }}
         >
           {label}
         </Label>
@@ -63,7 +64,8 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
       {error && (
         <span
           id={errorId}
-          className="block text-[var(--font-size-sm)] text-[var(--color-danger)] font-[var(--font-family-secondary)] mt-0.5 ml-[24px]"
+          className="block text-[var(--color-danger)] font-[var(--font-family-secondary)] mt-0.5 ml-[24px]"
+          style={{ fontSize: "var(--font-size-sm)" }}
         >
           {error}
         </span>
@@ -71,7 +73,8 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
       {hint && !error && (
         <span
           id={hintId}
-          className="block text-[var(--font-size-sm)] text-[#6b7280] font-[var(--font-family-secondary)] mt-0.5 ml-[24px]"
+          className="block text-[#6b7280] font-[var(--font-family-secondary)] mt-0.5 ml-[24px]"
+          style={{ fontSize: "var(--font-size-sm)" }}
         >
           {hint}
         </span>
