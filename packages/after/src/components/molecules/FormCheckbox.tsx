@@ -73,7 +73,7 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
       {hint && !error && (
         <span
           id={hintId}
-          className="block text-[#6b7280] font-[var(--font-family-secondary)] mt-0.5 ml-[24px]"
+          className="block text-[var(--color-text-tertiary)] font-[var(--font-family-secondary)] mt-0.5 ml-[24px]"
           style={{ fontSize: "var(--font-size-sm)" }}
         >
           {hint}

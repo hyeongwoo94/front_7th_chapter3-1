@@ -219,22 +219,22 @@ export const ManagementPage: React.FC = () => {
         stat1: {
           label: "활성",
           value: users.filter((u) => u.status === "active").length,
-          color: "rgb(56, 142, 60)",
+          color: "var(--color-success)",
         },
         stat2: {
           label: "비활성",
           value: users.filter((u) => u.status === "inactive").length,
-          color: "#ed6c02",
+          color: "var(--color-warning)",
         },
         stat3: {
           label: "정지",
           value: users.filter((u) => u.status === "suspended").length,
-          color: "#d32f2f",
+          color: "var(--color-danger)",
         },
         stat4: {
           label: "관리자",
           value: users.filter((u) => u.role === "admin").length,
-          color: "#1976d2",
+          color: "var(--color-primary)",
         },
       };
     } else {
@@ -244,22 +244,22 @@ export const ManagementPage: React.FC = () => {
         stat1: {
           label: "게시됨",
           value: posts.filter((p) => p.status === "published").length,
-          color: "#2e7d32",
+          color: "var(--color-success)",
         },
         stat2: {
           label: "임시저장",
           value: posts.filter((p) => p.status === "draft").length,
-          color: "#ed6c02",
+          color: "var(--color-warning)",
         },
         stat3: {
           label: "보관됨",
           value: posts.filter((p) => p.status === "archived").length,
-          color: "rgba(0, 0, 0, 0.6)",
+          color: "var(--color-text-disabled)",
         },
         stat4: {
           label: "총 조회수",
           value: posts.reduce((sum, p) => sum + p.views, 0),
-          color: "#1976d2",
+          color: "var(--color-primary)",
         },
       };
     }
@@ -295,15 +295,19 @@ export const ManagementPage: React.FC = () => {
   const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[var(--color-bg-tertiary)]">
       <div className="max-w-[1200px] mx-auto p-5">
         <div className="mb-5">
-          <h1 className="text-2xl font-bold mb-1 text-gray-800">관리 시스템</h1>
-          <p className="text-gray-600 text-sm">사용자와 게시글을 관리하세요</p>
+          <h1 className="text-2xl font-bold mb-1 text-[var(--color-text-primary)]">
+            관리 시스템
+          </h1>
+          <p className="text-[var(--color-text-tertiary)] text-sm">
+            사용자와 게시글을 관리하세요
+          </p>
         </div>
 
         <Card variant="default">
-          <div className="mb-4 border-b-2 border-gray-300 pb-2">
+          <div className="mb-4 border-b-2 border-[var(--color-border-secondary)] pb-2">
             <div className="flex gap-2">
               <Button
                 variant={entityType === "post" ? "primary" : "secondary"}
@@ -358,51 +362,53 @@ export const ManagementPage: React.FC = () => {
             )}
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-2.5 mb-4">
-              <div className="p-3 bg-blue-50 border border-blue-300 rounded-sm">
-                <div className="text-xs text-gray-600 mb-1">전체</div>
-                <div className="text-2xl font-bold text-blue-700">
+              <div className="p-3 bg-[var(--color-info-bg)] border border-[var(--color-info-border)] rounded-sm">
+                <div className="text-xs text-[var(--color-text-tertiary)] mb-1">
+                  전체
+                </div>
+                <div className="text-2xl font-bold text-[var(--color-primary)]">
                   {stats.total}
                 </div>
               </div>
 
-              <div className="p-3 bg-green-50 border border-green-400 rounded-sm">
-                <div className="text-xs text-gray-600 mb-1">
+              <div className="p-3 bg-[var(--color-alert-success-bg)] border border-[var(--color-alert-success-border)] rounded-sm">
+                <div className="text-xs text-[var(--color-text-tertiary)] mb-1">
                   {stats.stat1.label}
                 </div>
-                <div className="text-2xl font-bold text-green-700">
+                <div className="text-2xl font-bold text-[var(--color-success)]">
                   {stats.stat1.value}
                 </div>
               </div>
 
-              <div className="p-3 bg-orange-50 border border-orange-400 rounded-sm">
-                <div className="text-xs text-gray-600 mb-1">
+              <div className="p-3 bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] rounded-sm">
+                <div className="text-xs text-[var(--color-text-tertiary)] mb-1">
                   {stats.stat2.label}
                 </div>
-                <div className="text-2xl font-bold text-orange-700">
+                <div className="text-2xl font-bold text-[var(--color-warning)]">
                   {stats.stat2.value}
                 </div>
               </div>
 
-              <div className="p-3 bg-red-50 border border-red-300 rounded-sm">
-                <div className="text-xs text-gray-600 mb-1">
+              <div className="p-3 bg-[var(--color-alert-error-bg)] border border-[var(--color-alert-error-border)] rounded-sm">
+                <div className="text-xs text-[var(--color-text-tertiary)] mb-1">
                   {stats.stat3.label}
                 </div>
-                <div className="text-2xl font-bold text-red-700">
+                <div className="text-2xl font-bold text-[var(--color-danger)]">
                   {stats.stat3.value}
                 </div>
               </div>
 
-              <div className="p-3 bg-gray-100 border border-gray-400 rounded-sm">
-                <div className="text-xs text-gray-600 mb-1">
+              <div className="p-3 bg-[var(--color-bg-secondary)] border border-[var(--color-border-secondary)] rounded-sm">
+                <div className="text-xs text-[var(--color-text-tertiary)] mb-1">
                   {stats.stat4.label}
                 </div>
-                <div className="text-2xl font-bold text-gray-700">
+                <div className="text-2xl font-bold text-[var(--color-text-primary)]">
                   {stats.stat4.value}
                 </div>
               </div>
             </div>
 
-            <div className="border border-gray-300 bg-white overflow-auto rounded-sm">
+            <div className="border border-[var(--color-border-secondary)] bg-[var(--color-bg-primary)] overflow-auto rounded-sm">
               <Table
                 columns={renderTableColumns()}
                 data={data}

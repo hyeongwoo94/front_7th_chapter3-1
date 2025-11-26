@@ -23,6 +23,25 @@ export const Header: React.FC = () => {
     } else {
       root.classList.remove("dark");
     }
+
+    // theme-color meta 태그 업데이트 - CSS 변수에서 가져오기
+    const updateThemeColor = () => {
+      const computedStyle = getComputedStyle(root);
+      const themeColor = computedStyle.getPropertyValue("--theme-color").trim();
+
+      let themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      if (!themeColorMeta) {
+        themeColorMeta = document.createElement("meta");
+        themeColorMeta.setAttribute("name", "theme-color");
+        document.head.appendChild(themeColorMeta);
+      }
+      themeColorMeta.setAttribute("content", themeColor);
+    };
+
+    // CSS가 적용된 후 실행
+    requestAnimationFrame(() => {
+      setTimeout(updateThemeColor, 0);
+    });
   }, [isDark]);
 
   const toggleDarkMode = () => {
@@ -32,7 +51,7 @@ export const Header: React.FC = () => {
     <header
       className={cn(
         "bg-[var(--color-bg-primary)]",
-        "border-b border-[#e5e7eb]",
+        "border-b border-[var(--color-border-secondary)]",
         "shadow-[var(--shadow-header)]",
         "sticky top-0",
         "z-[var(--z-index-header)]",
@@ -54,7 +73,7 @@ export const Header: React.FC = () => {
             className={cn(
               "w-[var(--logo-size)]",
               "h-[var(--logo-size)]",
-              "bg-[#007bff]",
+              "bg-[var(--color-primary)]",
               "rounded-lg",
               "flex items-center justify-center",
               "text-white font-bold text-[20px]"
@@ -65,14 +84,14 @@ export const Header: React.FC = () => {
           <div>
             <h1
               className={cn(
-                "text-lg font-bold text-[#1a202c] m-0 leading-none"
+                "text-lg font-bold text-[var(--color-text-primary)] m-0 leading-none"
               )}
             >
               Hanghae Company
             </h1>
             <p
               className={cn(
-                "text-[11px] text-[#718096] m-0 leading-none mt-0.5"
+                "text-[11px] text-[var(--color-text-tertiary)] m-0 leading-none mt-0.5"
               )}
             >
               Design System Migration Project
@@ -84,13 +103,13 @@ export const Header: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="text-right">
             <div
-              className="font-semibold text-[#1a202c]"
+              className="font-semibold text-[var(--color-text-primary)]"
               style={{ fontSize: "var(--font-size-md)" }}
             >
               Demo User
             </div>
             <div
-              className="text-[#718096]"
+              className="text-[var(--color-text-tertiary)]"
               style={{ fontSize: "var(--font-size-sm)" }}
             >
               demo@example.com
@@ -101,9 +120,9 @@ export const Header: React.FC = () => {
               "w-[var(--logo-size)]",
               "h-[var(--logo-size)]",
               "rounded-full",
-              "bg-[#e3f2fd]",
+              "bg-[var(--color-info-bg)]",
               "flex items-center justify-center",
-              "text-[#007bff] font-semibold text-base"
+              "text-[var(--color-primary)] font-semibold text-base"
             )}
           >
             DU
