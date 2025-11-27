@@ -1,298 +1,50 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { Button } from "../components/ui/button";
 import { Alert, Table, Modal, Card } from "../components/organisms";
 import { FormInput, FormSelect, FormTextarea } from "../components/molecules";
-import { userService } from "../services/userService";
-import { postService } from "../services/postService";
-import type { User } from "../services/userService";
+import { useManagementPage } from "../hooks/useManagementPage";
+import { getUserTableColumns, getPostTableColumns } from "../lib/table-columns";
 import type { Post } from "../services/postService";
 
-type EntityType = "user" | "post";
-type Entity = User | Post;
-
-type UserFormData = {
-  username?: string;
-  email?: string;
-  role?: "admin" | "moderator" | "user";
-  status?: "active" | "inactive" | "suspended";
-};
-
-type PostFormData = {
-  title?: string;
-  content?: string;
-  author?: string;
-  category?: string;
-  status?: "draft" | "published" | "archived";
-};
-
+/**
+ * ManagementPage 컴포넌트
+ * 
+ * 뷰와 비즈니스 로직이 완전히 분리된 페이지 컴포넌트입니다.
+ * 모든 비즈니스 로직은 useManagementPage 훅에서 관리됩니다.
+ */
 export const ManagementPage: React.FC = () => {
-  const [entityType, setEntityType] = useState<EntityType>("post");
-  const [data, setData] = useState<Entity[]>([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Entity | null>(null);
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    // State
+    entityType,
+    data,
+    isCreateModalOpen,
+    isEditModalOpen,
+    selectedItem,
+    showSuccessAlert,
+    alertMessage,
+    showErrorAlert,
+    errorMessage,
+    userFormData,
+    postFormData,
+    stats,
 
-  const [userFormData, setUserFormData] = useState<UserFormData>({});
-  const [postFormData, setPostFormData] = useState<PostFormData>({});
+    // Actions
+    setEntityType,
+    setIsCreateModalOpen,
+    setIsEditModalOpen,
+    setSelectedItem,
+    setShowSuccessAlert,
+    setShowErrorAlert,
+    setUserFormData,
+    setPostFormData,
+    handleCreate,
+    handleEdit,
+    handleUpdate,
+    handleDelete,
+    handleStatusAction,
+  } = useManagementPage();
 
-  const loadData = useCallback(async () => {
-    try {
-      let result: Entity[];
-
-      if (entityType === "user") {
-        result = await userService.getAll();
-      } else {
-        result = await postService.getAll();
-      }
-
-      setData(result);
-    } catch {
-      setErrorMessage("데이터를 불러오는데 실패했습니다");
-      setShowErrorAlert(true);
-    }
-  }, [entityType]);
-
-  useEffect(() => {
-    loadData();
-    setUserFormData({});
-    setPostFormData({});
-    setIsCreateModalOpen(false);
-    setIsEditModalOpen(false);
-    setSelectedItem(null);
-  }, [entityType, loadData]);
-
-  const handleCreate = async () => {
-    try {
-      if (entityType === "user") {
-        if (!userFormData.username || !userFormData.email) {
-          throw new Error("사용자명과 이메일은 필수입니다");
-        }
-        await userService.create({
-          username: userFormData.username,
-          email: userFormData.email,
-          role: userFormData.role || "user",
-          status: userFormData.status || "active",
-        });
-      } else {
-        if (
-          !postFormData.title ||
-          !postFormData.author ||
-          !postFormData.category
-        ) {
-          throw new Error("제목, 작성자, 카테고리는 필수입니다");
-        }
-        await postService.create({
-          title: postFormData.title,
-          content: postFormData.content || "",
-          author: postFormData.author,
-          category: postFormData.category,
-          status: postFormData.status || "draft",
-        });
-      }
-
-      await loadData();
-      setIsCreateModalOpen(false);
-      setUserFormData({});
-      setPostFormData({});
-      setAlertMessage(
-        `${entityType === "user" ? "사용자" : "게시글"}가 생성되었습니다`
-      );
-      setShowSuccessAlert(true);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "생성에 실패했습니다";
-      setErrorMessage(errorMessage);
-      setShowErrorAlert(true);
-    }
-  };
-
-  const handleEdit = (item: Entity) => {
-    setSelectedItem(item);
-
-    if (entityType === "user") {
-      const user = item as User;
-      setUserFormData({
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        status: user.status,
-      });
-    } else {
-      const post = item as Post;
-      setPostFormData({
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        category: post.category,
-        status: post.status,
-      });
-    }
-
-    setIsEditModalOpen(true);
-  };
-
-  const handleUpdate = async () => {
-    if (!selectedItem) return;
-
-    try {
-      if (entityType === "user") {
-        await userService.update(selectedItem.id, userFormData);
-      } else {
-        await postService.update(selectedItem.id, postFormData);
-      }
-
-      await loadData();
-      setIsEditModalOpen(false);
-      setUserFormData({});
-      setPostFormData({});
-      setSelectedItem(null);
-      setAlertMessage(
-        `${entityType === "user" ? "사용자" : "게시글"}가 수정되었습니다`
-      );
-      setShowSuccessAlert(true);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "수정에 실패했습니다";
-      setErrorMessage(errorMessage);
-      setShowErrorAlert(true);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
-
-    try {
-      if (entityType === "user") {
-        await userService.delete(id);
-      } else {
-        await postService.delete(id);
-      }
-
-      await loadData();
-      setAlertMessage("삭제되었습니다");
-      setShowSuccessAlert(true);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "삭제에 실패했습니다";
-      setErrorMessage(errorMessage);
-      setShowErrorAlert(true);
-    }
-  };
-
-  const handleStatusAction = async (
-    id: number,
-    action: "publish" | "archive" | "restore"
-  ) => {
-    if (entityType !== "post") return;
-
-    try {
-      if (action === "publish") {
-        await postService.publish(id);
-      } else if (action === "archive") {
-        await postService.archive(id);
-      } else if (action === "restore") {
-        await postService.restore(id);
-      }
-
-      await loadData();
-      const message =
-        action === "publish" ? "게시" : action === "archive" ? "보관" : "복원";
-      setAlertMessage(`${message}되었습니다`);
-      setShowSuccessAlert(true);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "작업에 실패했습니다";
-      setErrorMessage(errorMessage);
-      setShowErrorAlert(true);
-    }
-  };
-
-  const getStats = () => {
-    if (entityType === "user") {
-      const users = data as User[];
-      return {
-        total: users.length,
-        stat1: {
-          label: "활성",
-          value: users.filter((u) => u.status === "active").length,
-          color: "var(--color-success)",
-        },
-        stat2: {
-          label: "비활성",
-          value: users.filter((u) => u.status === "inactive").length,
-          color: "var(--color-warning)",
-        },
-        stat3: {
-          label: "정지",
-          value: users.filter((u) => u.status === "suspended").length,
-          color: "var(--color-danger)",
-        },
-        stat4: {
-          label: "관리자",
-          value: users.filter((u) => u.role === "admin").length,
-          color: "var(--color-primary)",
-        },
-      };
-    } else {
-      const posts = data as Post[];
-      return {
-        total: posts.length,
-        stat1: {
-          label: "게시됨",
-          value: posts.filter((p) => p.status === "published").length,
-          color: "var(--color-success)",
-        },
-        stat2: {
-          label: "임시저장",
-          value: posts.filter((p) => p.status === "draft").length,
-          color: "var(--color-warning)",
-        },
-        stat3: {
-          label: "보관됨",
-          value: posts.filter((p) => p.status === "archived").length,
-          color: "var(--color-text-disabled)",
-        },
-        stat4: {
-          label: "총 조회수",
-          value: posts.reduce((sum, p) => sum + p.views, 0),
-          color: "var(--color-primary)",
-        },
-      };
-    }
-  };
-
-  // 🚨 Table 컴포넌트에 로직을 위임하여 간소화
-  const renderTableColumns = () => {
-    if (entityType === "user") {
-      return [
-        { key: "id", header: "ID", width: "60px" },
-        { key: "username", header: "사용자명", width: "150px" },
-        { key: "email", header: "이메일" },
-        { key: "role", header: "역할", width: "120px" },
-        { key: "status", header: "상태", width: "120px" },
-        { key: "createdAt", header: "생성일", width: "120px" },
-        { key: "lastLogin", header: "마지막 로그인", width: "140px" },
-        { key: "actions", header: "관리", width: "200px" },
-      ];
-    } else {
-      return [
-        { key: "id", header: "ID", width: "60px" },
-        { key: "title", header: "제목" },
-        { key: "author", header: "작성자", width: "120px" },
-        { key: "category", header: "카테고리", width: "140px" },
-        { key: "status", header: "상태", width: "120px" },
-        { key: "views", header: "조회수", width: "100px" },
-        { key: "createdAt", header: "작성일", width: "120px" },
-        { key: "actions", header: "관리", width: "250px" },
-      ];
-    }
-  };
-
-  const stats = getStats();
+  const tableColumns = entityType === "user" ? getUserTableColumns() : getPostTableColumns();
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-tertiary)]">
@@ -410,7 +162,7 @@ export const ManagementPage: React.FC = () => {
 
             <div className="border border-[var(--color-border-secondary)] bg-[var(--color-bg-primary)] overflow-auto rounded-sm">
               <Table
-                columns={renderTableColumns()}
+                columns={tableColumns}
                 data={data}
                 striped
                 hover
@@ -468,7 +220,6 @@ export const ManagementPage: React.FC = () => {
                 placeholder="사용자명을 입력하세요"
                 required
                 width="full"
-                fieldType="username"
               />
               <FormInput
                 name="email"
@@ -481,7 +232,6 @@ export const ManagementPage: React.FC = () => {
                 type="email"
                 required
                 width="full"
-                fieldType="email"
               />
               <div className="grid grid-cols-2 gap-4">
                 <FormSelect
@@ -532,7 +282,6 @@ export const ManagementPage: React.FC = () => {
                 placeholder="게시글 제목을 입력하세요"
                 required
                 width="full"
-                fieldType="postTitle"
               />
               <div className="grid grid-cols-2 gap-4">
                 <FormInput
@@ -629,7 +378,6 @@ export const ManagementPage: React.FC = () => {
                 placeholder="사용자명을 입력하세요"
                 required
                 width="full"
-                fieldType="username"
               />
               <FormInput
                 name="email"
@@ -642,7 +390,6 @@ export const ManagementPage: React.FC = () => {
                 type="email"
                 required
                 width="full"
-                fieldType="email"
               />
               <div className="grid grid-cols-2 gap-4">
                 <FormSelect
@@ -693,7 +440,6 @@ export const ManagementPage: React.FC = () => {
                 placeholder="게시글 제목을 입력하세요"
                 required
                 width="full"
-                fieldType="postTitle"
               />
               <div className="grid grid-cols-2 gap-4">
                 <FormInput
