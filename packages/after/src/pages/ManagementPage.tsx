@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Alert, Table, Modal, Card } from "../components/organisms";
 import { FormInput, FormSelect, FormTextarea } from "../components/molecules";
@@ -46,8 +46,66 @@ export const ManagementPage: React.FC = () => {
 
   const tableColumns = entityType === "user" ? getUserTableColumns() : getPostTableColumns();
 
+  // 3초 후 자동으로 알림 닫기
+  useEffect(() => {
+    if (showSuccessAlert) {
+      const timer = setTimeout(() => {
+        setShowSuccessAlert(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessAlert, setShowSuccessAlert]);
+
+  useEffect(() => {
+    if (showErrorAlert) {
+      const timer = setTimeout(() => {
+        setShowErrorAlert(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showErrorAlert, setShowErrorAlert]);
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-tertiary)]">
+      {/* Fixed Alert 팝업 */}
+      {showSuccessAlert && (
+        <div 
+          className="fixed top-[30px] left-1/2 z-[1001] mx-4"
+          style={{
+            animation: 'fadeInDownCenter 0.3s ease-in-out',
+            width: 'max-content',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <Alert
+            variant="success"
+            title="성공"
+            onClose={() => setShowSuccessAlert(false)}
+          >
+            {alertMessage}
+          </Alert>
+        </div>
+      )}
+
+      {showErrorAlert && (
+        <div 
+          className="fixed top-[30px] left-1/2 z-[1001] mx-4"
+          style={{
+            animation: 'fadeInDownCenter 0.3s ease-in-out',
+            width: 'max-content',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <Alert
+            variant="error"
+            title="오류"
+            onClose={() => setShowErrorAlert(false)}
+          >
+            {errorMessage}
+          </Alert>
+        </div>
+      )}
+
       <div className="max-w-[1200px] mx-auto p-5">
         <div className="mb-5">
           <h1 className="text-2xl font-bold mb-1 text-[var(--color-text-primary)]">
@@ -88,30 +146,6 @@ export const ManagementPage: React.FC = () => {
                 새로 만들기
               </Button>
             </div>
-
-            {showSuccessAlert && (
-              <div className="mb-2">
-                <Alert
-                  variant="success"
-                  title="성공"
-                  onClose={() => setShowSuccessAlert(false)}
-                >
-                  {alertMessage}
-                </Alert>
-              </div>
-            )}
-
-            {showErrorAlert && (
-              <div className="mb-2">
-                <Alert
-                  variant="error"
-                  title="오류"
-                  onClose={() => setShowErrorAlert(false)}
-                >
-                  {errorMessage}
-                </Alert>
-              </div>
-            )}
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-2.5 mb-4">
               <div className="p-3 bg-[var(--color-info-bg)] border border-[var(--color-info-border)] rounded-sm">
