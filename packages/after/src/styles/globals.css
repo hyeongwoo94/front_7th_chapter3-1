@@ -31,7 +31,8 @@
   }
 
   .dark {
-    /* shadcn/ui 기본 다크 모드 변수 */
+    /* shadcn/ui 기본 다크 모드 변수만 관리 */
+    /* 디자인 토큰 다크 모드는 design-tokens.css에서 관리 */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -56,103 +57,8 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-
-    /* ============================================
-       디자인 토큰 기반 다크 모드 변수
-       design-tokens.css의 모든 색상에 대한 다크 모드 버전
-       ============================================ */
-
-    /* Primary 컬러 - 다크 모드에서 더 밝게 */
-    --color-primary: #42a5f5;
-    --color-primary-hover: #64b5f6;
-    --color-primary-border: #64b5f6;
-
-    /* Secondary 컬러 - 다크 모드에 맞게 조정 */
-    --color-secondary: #2d2d2d;
-    --color-secondary-hover: #3d3d3d;
-    --color-secondary-text: #e5e5e5;
-    --color-secondary-border: #404040;
-
-    /* Danger 컬러 - 다크 모드에서 약간 밝게 */
-    --color-danger: #ef5350;
-    --color-danger-hover: #f44336;
-    --color-danger-border: #f44336;
-
-    /* Success 컬러 - 다크 모드에서 더 밝게 */
-    --color-success: #66bb6a;
-    --color-success-hover: #4caf50;
-    --color-success-border: #4caf50;
-
-    /* Warning 컬러 - 다크 모드에 맞게 조정 */
-    --color-warning: #ffa726;
-    --color-warning-bg: #3e2723;
-    --color-warning-border: #ff9800;
-    --color-warning-text: #ffcc80;
-
-    /* Info 컬러 - 다크 모드에 맞게 조정 */
-    --color-info: #42a5f5;
-    --color-info-bg: #1e3a5f;
-    --color-info-border: #64b5f6;
-    --color-info-text: #90caf9;
-
-    /* 텍스트 컬러 - 라이트 모드와 대비 */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #e5e5e5;
-    --color-text-tertiary: #a3a3a3;
-    --color-text-disabled: rgba(255, 255, 255, 0.4);
-    --color-text-muted: rgba(255, 255, 255, 0.87);
-    --color-text-subtitle: rgba(255, 255, 255, 0.6);
-
-    /* 배경 컬러 - 라이트 모드와 대비 */
-    --color-bg-primary: #1a1a1a;
-    --color-bg-secondary: #2d2d2d;
-    --color-bg-tertiary: #262626;
-    --color-bg-disabled: rgba(255, 255, 255, 0.12);
-
-    /* 보더 컬러 - 다크 모드에 맞게 조정 */
-    --color-border-primary: #404040;
-    --color-border-secondary: #525252;
-    --color-border-tertiary: rgba(255, 255, 255, 0.12);
-    --color-border-quaternary: rgba(255, 255, 255, 0.08);
-    --color-border-input: rgba(255, 255, 255, 0.23);
-    --color-border-checkbox: #525252;
-
-    /* Alert 배경 컬러 - 다크 모드에 맞게 조정 */
-    --color-alert-success-bg: #1b5e20;
-    --color-alert-success-border: #4caf50;
-    --color-alert-success-text: #c8e6c9;
-    --color-alert-error-bg: #b71c1c;
-    --color-alert-error-border: #ef5350;
-    --color-alert-error-text: #ffcdd2;
-    --color-alert-default-bg: #2d2d2d;
-    --color-alert-default-border: #525252;
-    --color-alert-default-text: #e5e5e5;
-
-    /* Badge 컬러 - 다크 모드에서 더 밝게 */
-    --color-badge-primary: #42a5f5;
-    --color-badge-secondary: #9e9e9e;
-    --color-badge-success: #66bb6a;
-    --color-badge-danger: #ef5350;
-    --color-badge-warning: #ffa726;
-    --color-badge-info: #42a5f5;
-
-    /* 그림자 - 다크 모드에서 더 강하게 */
-    --shadow-card-default: 0px 2px 1px -1px rgba(0, 0, 0, 0.4),
-      0px 1px 1px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
-    --shadow-card-elevated: 0px 2px 4px -1px rgba(0, 0, 0, 0.4),
-      0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-    --shadow-modal: 0px 11px 15px -7px rgba(0, 0, 0, 0.5),
-      0px 24px 38px 3px rgba(0, 0, 0, 0.4), 0px 9px 46px 8px rgba(0, 0, 0, 0.4);
-    --shadow-header: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-
-    /* theme-color - 다크 모드 배경색 */
-    --theme-color: #1a1a1a;
   }
 
-  :root {
-    /* theme-color - 라이트 모드 배경색 */
-    --theme-color: #ffffff;
-  }
 
   * {
     border-color: hsl(var(--border));
