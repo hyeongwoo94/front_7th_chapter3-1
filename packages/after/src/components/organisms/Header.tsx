@@ -23,25 +23,6 @@ export const Header: React.FC = () => {
     } else {
       root.classList.remove("dark");
     }
-
-    // theme-color meta 태그 업데이트 - CSS 변수에서 가져오기
-    const updateThemeColor = () => {
-      const computedStyle = getComputedStyle(root);
-      const themeColor = computedStyle.getPropertyValue("--theme-color").trim();
-
-      let themeColorMeta = document.querySelector('meta[name="theme-color"]');
-      if (!themeColorMeta) {
-        themeColorMeta = document.createElement("meta");
-        themeColorMeta.setAttribute("name", "theme-color");
-        document.head.appendChild(themeColorMeta);
-      }
-      themeColorMeta.setAttribute("content", themeColor);
-    };
-
-    // CSS가 적용된 후 실행
-    requestAnimationFrame(() => {
-      setTimeout(updateThemeColor, 0);
-    });
   }, [isDark]);
 
   const toggleDarkMode = () => {
