@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-[var(--color-primary)] text-white border-[var(--color-primary-border)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-border)]",
+          "bg-[var(--color-primary)] text-white border-[var(--color-primary-border)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-border)] focus-visible:ring-[var(--color-primary)]",
         secondary:
-          "bg-[var(--color-secondary)] text-[var(--color-secondary-text)] border-[var(--color-secondary-border)] hover:bg-[var(--color-secondary-hover)] hover:border-[var(--color-secondary-border)]",
+          "bg-[var(--color-secondary)] text-[var(--color-secondary-text)] border-[var(--color-secondary-border)] hover:bg-[var(--color-secondary-hover)] hover:border-[var(--color-secondary-border)] focus-visible:ring-[var(--color-primary)]",
         danger:
-          "bg-[var(--color-danger)] text-white border-[var(--color-danger-border)] hover:bg-[var(--color-danger-hover)] hover:border-[var(--color-danger-border)]",
+          "bg-[var(--color-danger)] text-white border-[var(--color-danger-border)] hover:bg-[var(--color-danger-hover)] hover:border-[var(--color-danger-border)] focus-visible:ring-[var(--color-danger)]",
         success:
-          "bg-[var(--color-success)] text-white border-[var(--color-success-border)] hover:bg-[var(--color-success-hover)] hover:border-[var(--color-success-border)]",
+          "bg-[var(--color-success)] text-white border-[var(--color-success-border)] hover:bg-[var(--color-success-hover)] hover:border-[var(--color-success-border)] focus-visible:ring-[var(--color-success)]",
       },
       size: {
         default: "h-10",
