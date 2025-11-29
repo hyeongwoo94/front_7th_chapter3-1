@@ -47,7 +47,21 @@ jobs:
         env:
           # GitHub Pages 경로: https://{user}.github.io/front_7th_chapter3-1/storybook/
           STORYBOOK_BASE_HREF: "/front_7th_chapter3-1/storybook/"
-        run: pnpm build-storybook -- --output-dir ./dist/storybook
+          STORYBOOK_OUTPUT_DIR: "./storybook-static"
+        run: pnpm build-storybook
+
+      - name: Move Storybook to dist/storybook
+        working-directory: ./packages/after
+        run: |
+          mkdir -p dist/storybook
+          mv storybook-static/* dist/storybook/
+          rmdir storybook-static || true
+
+      - name: Create .nojekyll file
+        working-directory: ./packages/after/dist
+        run: |
+          touch .nojekyll
+          echo "Jekyll을 비활성화하여 Storybook 정적 파일들이 서빙되도록 합니다." > .nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

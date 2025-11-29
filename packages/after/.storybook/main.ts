@@ -12,6 +12,8 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  // 빌드 출력 디렉토리 설정 (환경 변수로 오버라이드 가능)
+  outputDir: process.env.STORYBOOK_OUTPUT_DIR || "../storybook-static",
   async viteFinal(config) {
     // GitHub Pages 에서 /front_7th_chapter3-1/storybook/ 경로로 서빙될 수 있도록 base 설정
     const base =
