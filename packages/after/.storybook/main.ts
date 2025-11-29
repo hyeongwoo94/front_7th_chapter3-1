@@ -13,10 +13,16 @@ const config: StorybookConfig = {
     options: {},
   },
   async viteFinal(config) {
+    // GitHub Pages 에서 /front_7th_chapter3-1/storybook/ 경로로 서빙될 수 있도록 base 설정
+    const base =
+      process.env.STORYBOOK_BASE_HREF || "/"; // 로컬 dev 에서는 /
+
     return mergeConfig(config, {
+      base,
       css: {
         postcss: {
           plugins: [
+            // Tailwind v4 + autoprefixer
             require("@tailwindcss/postcss"),
             require("autoprefixer"),
           ],
@@ -25,4 +31,5 @@ const config: StorybookConfig = {
     });
   },
 };
+
 export default config;

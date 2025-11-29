@@ -42,6 +42,13 @@ jobs:
       - name: Build after package
         run: pnpm --filter @front_lite_chapter3-1/after build
 
+      - name: Build Storybook (after package)
+        working-directory: ./packages/after
+        env:
+          # GitHub Pages 경로: https://{user}.github.io/front_7th_chapter3-1/storybook/
+          STORYBOOK_BASE_HREF: "/front_7th_chapter3-1/storybook/"
+        run: pnpm build-storybook -- --output-dir ./dist/storybook
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
